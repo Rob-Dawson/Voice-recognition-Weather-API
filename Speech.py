@@ -1,67 +1,85 @@
+from gtts import gTTS
+
+import time
+import pygame
+import requests
 import speech_recognition as sr
 
-_AudioFile = ("weather.wav")
-_WakeUpCommand = "wather"
+_WakeUpCommand = "Hey Grace"
 
-# def getWakeUp(_WakeUpCommand):
-#     return wakeUpCommand = _WakeUpCommand
+def init():
+    pygame.init()
 
-# def getAudioFile(_AudioFile):
-#     return audioFile = _AudioFile
+def apiCallCheck(status):
+    if status == requests.codes.ok:
+        return 200
+    else:
+        return 404
+
+## Calls the Grace api and filters the response 
+# def getGraceQueryInfo()
 
 
-# r = sr.Recognizer()
-# with sr.AudioFile(AUDIO_FILE) as source:
-#     audio = r.record(source)
-# try:
-#     print("The audio file contains: " + r.recognize_google(audio))
-#     queryContence = r.recognize_google(audio)
-#     if "weather" in queryContence:
-#         print("")
-        
-# except sr.UnknownValueError:
-#     print("Not recognised")
-# except sr.RequestError as e:
-#     print("Error: {0}" .format(e))
+## The output from Grace API 
+# def printQueryResult
+#     return queryResult
 
-# def init():
+## Transcript of all recognised speech from Microphone input
+def printTranscript(recognisedSpeech):
+    print(recognisedSpeech)
 
-# def apiCallCheck(status):
+def speak(response):
+    textToSpeech = gTTS(text = response)
+    textToSpeech.save("Grace Responce.AIFF")
+    pygame.mixer.music.load("Grace Responce.AIFF")
+    pygame.mixer.music.play()
+    while(pygame.mixer.music.get_busy() == 1):
+        time.sleep(1)
 
-# def getWeatherInfo(location)
-
-# def printWeatherInfo():
-
-# def printTranscript():
-
-# def speak():
 
 def listen():
-    recognise = sr.Recognizer()
-    with sr.AudioFile(_AudioFile) as source:
-        audio = recognise.record(source)
+    speech = sr.Recognizer()
+    mic = sr.Microphone()
+    audio = ""
+    with mic as source:
+        speech.adjust_for_ambient_noise(source)
+        audio = speech.listen(source, phrase_time_limit=5)
     try:
-        queryContence = recognise.recognize_google(audio)
+        queryContence = speech.recognize_google(audio)
         return queryContence
     except sr.UnknownValueError:
-        print("Not Recognised")
+        print("Speech Not Recognised")
     except sr.RequestError as e:
         print("Error: {0}" .format(e))
 
 
+def wakeCommandCheck(recognisedText):
 
-#def wakeCommandCheck():
+    if _WakeUpCommand.upper() in recognisedText.upper():
+        return True
+    else:
+        return False
 
 def main():
-    wakeUp = False
-    while(wakeUp == False):
-        recognisedText = listen()
-        if _WakeUpCommand in recognisedText:
-             print("Recognised")
-             wakeUp = True
-        else:
-            print("Not Recognised")
-    print("New Statement")
+    init()
+    while (True):
+        wakeUp = False
+        while(wakeUp == False):
+            recognisedText = listen()
+            printTranscript(recognisedText)
+            if recognisedText is not None:
+                wakeUp = wakeCommandCheck(recognisedText)
+        
+        speak("Hi, how can i help you?")
+        
+        query = False
+        while (query == False):
+            recognisedText = listen()
+            printTranscript(recognisedSpeech)
+            query = getGraceQueryInfo(recognisedText)
+            output = printQueryResult()
+            speak(output)
+
 
 if __name__ == "__main__":
     main()
